@@ -9,8 +9,7 @@ function TaskInput({ onFetchTasks }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isContentEmpty) {
-      // Optionally, provide user feedback here (e.g., an alert or a message on the form)
-      console.log("Content cannot be empty.");
+      alert("Content cannot be empty.");
       return;
     }
 
@@ -27,22 +26,32 @@ function TaskInput({ onFetchTasks }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="mb-4 max-w-md mx-auto p-4 bg-white shadow-md rounded-lg">
       <input
         type="text"
         placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="input input-bordered input-primary w-full mb-2"
+        className="input input-bordered w-full mb-4"
+        style={{ borderColor: '#CCCCCC', backgroundColor: '#F8F8F8' }}
       />
       <textarea
         placeholder="Content"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="textarea textarea-bordered textarea-primary w-full mb-2"
+        className="textarea textarea-bordered w-full mb-4"
         required
+        style={{ borderColor: '#CCCCCC', backgroundColor: '#F8F8F8' }}
       ></textarea>
-      <button type="submit" className="btn btn-primary w-full" disabled={isContentEmpty}>Add Task</button>
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          className={`btn rounded-full px-8 transition-colors duration-300 ${!isContentEmpty ? 'bg-gray-400 hover:bg-gray-500 active:bg-gray-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+          disabled={isContentEmpty}
+        >
+          Add Task
+        </button>
+      </div>
     </form>
   );
 }
