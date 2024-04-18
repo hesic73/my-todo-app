@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function TaskInput({ onFetchTasks }) {
+function TaskInput({ onAddTask }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -13,16 +13,17 @@ function TaskInput({ onFetchTasks }) {
       return;
     }
 
-    await fetch('/tasks/', {
+    const response = await fetch('/tasks/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ title, content, last_modified: new Date().toISOString() }),
     });
+    const newTask = await response.json();
+    onAddTask(newTask);
     setTitle('');
     setContent('');
-    onFetchTasks();
   };
 
   return (
