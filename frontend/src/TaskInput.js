@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function TaskInput({ onAddTask }) {
+function TaskInput({ onAddTask, onClose }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -44,13 +44,17 @@ function TaskInput({ onAddTask }) {
         required
         style={{ borderColor: '#CCCCCC', backgroundColor: '#F8F8F8' }}
       ></textarea>
-      <div className="flex justify-center">
+      <div className="flex justify-between items-center">
         <button
           type="submit"
-          className={`btn rounded-full px-8 transition-colors duration-300 ${!isContentEmpty ? 'bg-gray-400 hover:bg-gray-500 active:bg-gray-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-          disabled={isContentEmpty}
-        >
+          className="btn rounded-full px-8 ...">
           Add Task
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="btn rounded-full px-8 ...">
+          Close
         </button>
       </div>
     </form>
