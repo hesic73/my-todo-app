@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LIST_WIDTH from './consts';
 
 function TaskItem({ task, removeTask, updateTask }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -29,7 +30,7 @@ function TaskItem({ task, removeTask, updateTask }) {
   };
 
   return (
-    <div className="card bg-white shadow-lg m-2 p-4 rounded-lg max-w-lg mx-auto transition duration-300 ease-in-out">
+    <div className={`card bg-white shadow-lg m-2 p-4 rounded-lg ${LIST_WIDTH} mx-auto transition duration-300 ease-in-out`}>
       {isEditing ? (
         <>
           <input

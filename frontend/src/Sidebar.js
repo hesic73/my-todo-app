@@ -1,9 +1,15 @@
 import React from 'react';
 
+/**
+ * @param {Object} props The properties passed to the component
+ * @param {boolean} props.isCollapsed Indicates if the sidebar is in its collapsed state
+ * @param {()=>void} props.toggleSidebar Function to toggle the sidebar between collapsed and expanded states
+ * @returns {React.ReactElement} Rendered sidebar component
+ */
 function Sidebar({ isCollapsed, toggleSidebar }) {
     // Define dynamic classes for better readability
     const sidebarWidth = isCollapsed ? 'w-16' : 'w-64';
-    const sidebarBackground = isCollapsed ? 'bg-gray-100' : 'bg-white';
+    const sidebarBackground = isCollapsed ? 'bg-white' : 'bg-gray-100';
     const sidebarShadow = isCollapsed ? '' : 'shadow-md';
 
     return (
@@ -20,6 +26,9 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
                     <div className="p-5 w-full">
                         <h2 className="text-lg font-semibold">Menu</h2>
                         {/* Placeholder for additional content */}
+
+
+                        
                     </div>
                 )}
             </div>

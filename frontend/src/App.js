@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import TaskInput from './TaskInput';
 import TaskList from './TaskList';
 import Sidebar from './Sidebar';
+import AddTaskButton from 'AddTaskButton';
+
+/**
+ * @typedef {import('./types/types').Task} Task
+ */
 
 function App() {
     const [tasks, setTasks] = useState([]);
@@ -18,14 +23,26 @@ function App() {
         setTasks(data);
     };
 
+    /**
+     * 
+     * @param {Task} newTask new task to add
+     */
     const addTask = (newTask) => {
         setTasks(prevTasks => [...prevTasks, newTask]);
     };
 
+    /**
+     * 
+     * @param {number} id Id of the task to remove
+     */
     const removeTask = (id) => {
         setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
     };
 
+    /**
+     * 
+     * @param {Task} updatedTask new task to update
+     */
     const updateTask = (updatedTask) => {
         setTasks(prevTasks => prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task));
     };
@@ -37,23 +54,28 @@ function App() {
     };
 
     return (
-        <div className="App bg-gray-100 min-h-screen flex">
+        <div className="App bg-white min-h-screen flex">
             <Sidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} />
             <div className={`flex-1 transition-margin duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
                 <header className="text-center py-10">
                     <h1 className="text-4xl font-bold text-gray-800 mb-4">To-Do List</h1>
-                    <div className="max-w-4xl mx-auto px-4">
-                        <TaskList tasks={tasks} removeTask={removeTask} updateTask={updateTask} />
-                        <button onClick={handleNewTaskClick} className="flex items-center justify-center m-4">
-                            <svg className="w-6 h-6 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-                                <path d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span>Add task</span>
-                        </button>
-                        {/* Conditional rendering of TaskInput */}
-                        {showTaskInput && <TaskInput onAddTask={addTask} onClose={() => setShowTaskInput(false)} />}
-                    </div>
                 </header>
+
+                <main className="max-w-4xl mx-auto px-4">
+
+
+                    <TaskList tasks={tasks} removeTask={removeTask} updateTask={updateTask} />
+
+
+                    {!showTaskInput && <AddTaskButton handleNewTaskClick={handleNewTaskClick} />}
+
+
+                    {showTaskInput && <TaskInput onAddTask={addTask} onClose={() => setShowTaskInput(false)} />}
+
+
+                </main>
+
+
             </div>
         </div>
     );
