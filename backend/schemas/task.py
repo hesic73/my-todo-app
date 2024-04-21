@@ -3,8 +3,8 @@ from datetime import datetime
 
 
 class TaskBase(BaseModel):
-    title: str
-    content: str
+    name: str
+    description: str
 
 
 

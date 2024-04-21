@@ -14,21 +14,28 @@ import LIST_WIDTH from './consts';
  * @returns 
  */
 function TaskInput({ onAddTask, onClose }) {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [taskName, setTaskName] = useState('');
+  const [description, setDescription] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title.trim()) {
-      alert("Title cannot be empty.");
+    if (!taskName.trim()) {
+      alert("Task name cannot be empty.");
       return;
     }
 
-    const newTask = { id: Date.now(), title, content }; // Replace with actual API call
+    const response = await fetch('/tasks/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: taskName, description: description, last_modified: new Date().toISOString() }),
+    });
+    const newTask = await response.json();
     onAddTask(newTask);
-    setTitle('');
-    setContent('');
+    setTaskName('');
+    setDescription('');
   };
 
   return (
@@ -36,17 +43,16 @@ function TaskInput({ onAddTask, onClose }) {
       <input
         type="text"
         placeholder="Task name"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        value={taskName}
+        onChange={(e) => setTaskName(e.target.value)}
         className="w-full p-0 mb-4 border-gray-300 rounded focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50"
         required
       />
       <textarea
         placeholder="Description"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
         className="w-full p-2 mb-4 border-gray-300 rounded focus:border-red-500 focus:ring focus:ring-red-200 focus:ring-opacity-50"
-        required
       />
       <div className="flex justify-end space-x-3">
         <button
@@ -58,8 +64,8 @@ function TaskInput({ onAddTask, onClose }) {
         </button>
         <button
           type="submit"
-          className={`px-4 py-2 text-sm text-white rounded disabled:opacity-50 ${title.trim() ? "bg-red-500 hover:bg-red-600" : "bg-red-300"}`}
-          disabled={!title.trim()}
+          className={`px-4 py-2 text-sm text-white rounded disabled:opacity-50 ${taskName.trim() ? "bg-red-500 hover:bg-red-600" : "bg-red-300"}`}
+          disabled={!taskName.trim()}
         >
           Add Task
         </button>

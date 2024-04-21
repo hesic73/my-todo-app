@@ -18,8 +18,8 @@ import ConfirmModal from 'ConfirmModal';
  */
 function TaskItem({ task, removeTask, updateTask }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(task.title);
-  const [editedContent, setEditedContent] = useState(task.content);
+  const [editedTaskName, setEditedTaskName] = useState(task.name);
+  const [editedDescription, setEditedDescription] = useState(task.description);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleDelete = () => {
@@ -33,11 +33,11 @@ function TaskItem({ task, removeTask, updateTask }) {
   };
 
   const handleEdit = async () => {
-    if (isEditing && (editedTitle !== task.title || editedContent !== task.content)) {
+    if (isEditing && (editedTaskName !== task.name || editedDescription !== task.description)) {
       const updatedTask = {
         ...task,
-        title: editedTitle,
-        content: editedContent,
+        name: editedTaskName,
+        description: editedDescription,
         last_modified: new Date().toISOString()
       };
       await fetch(`/tasks/${task.id}`, {
@@ -54,8 +54,8 @@ function TaskItem({ task, removeTask, updateTask }) {
     setIsEditing(!isEditing);
     // Reset edited state if canceling
     if (isEditing) {
-      setEditedTitle(task.title);
-      setEditedContent(task.content);
+      setEditedTaskName(task.name);
+      setEditedDescription(task.description);
     }
   };
 
@@ -68,21 +68,21 @@ function TaskItem({ task, removeTask, updateTask }) {
 
   return (
     <>
-      {showConfirmModal && <ConfirmModal onConfirm={confirmDelete} onCancel={() => setShowConfirmModal(false)} taskName={task.title} />}
+      {showConfirmModal && <ConfirmModal onConfirm={confirmDelete} onCancel={() => setShowConfirmModal(false)} taskName={task.name} />}
       <div className={`bg-white p-4 shadow rounded ${LIST_WIDTH} mx-auto my-6`}>
         {isEditing ? (
           <>
             <input
               type="text"
-              value={editedTitle}
-              onChange={(e) => setEditedTitle(e.target.value)}
+              value={editedTaskName}
+              onChange={(e) => setEditedTaskName(e.target.value)}
               placeholder="Task Name"
               className={`${inputClass}`}
               required
             />
             <textarea
-              value={editedContent}
-              onChange={(e) => setEditedContent(e.target.value)}
+              value={editedDescription}
+              onChange={(e) => setEditedDescription(e.target.value)}
               placeholder="Description"
               className={`${inputClass}`}
               required
@@ -108,8 +108,8 @@ function TaskItem({ task, removeTask, updateTask }) {
           <>
             <div className="flex justify-between">
               <div>
-                <h2 className="text-lg font-semibold mb-1">{task.title}</h2>
-                <p className="text-sm text-gray-500">{task.content}</p>
+                <h2 className="text-lg font-semibold mb-1">{task.name}</h2>
+                <p className="text-sm text-gray-500">{task.description}</p>
               </div>
               <div className="flex space-x-2">
                 <button onClick={handleEditToggle} className="focus:outline-none">
