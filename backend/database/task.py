@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 from datetime import datetime
 
@@ -15,6 +17,9 @@ class Task(Base):
     name = Column(String, index=True)
     description = Column(String, index=True)
     last_modified = Column(DateTime, default=datetime.utcnow, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+    user = relationship("User", back_populates="tasks")
 
 
 def get_task(db: Session, task_id: int) -> Task | None:

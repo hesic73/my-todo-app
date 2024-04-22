@@ -7,7 +7,6 @@ class TaskBase(BaseModel):
     description: str
 
 
-
 class TaskCreate(TaskBase):
     pass
 
