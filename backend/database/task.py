@@ -26,8 +26,8 @@ def get_task(db: Session, task_id: int) -> Task | None:
     return db.query(Task).filter(Task.id == task_id).first()
 
 
-def get_tasks(db: Session, skip: int = 0, limit: int = 100) -> list[Task]:
-    return db.query(Task).offset(skip).limit(limit).all()
+def get_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> list[Task]:
+    return db.query(Task).filter(Task.id == user_id).offset(skip).limit(limit).all()
 
 
 def create_task(db: Session, task: schemas.TaskCreate) -> Task:
@@ -38,8 +38,10 @@ def create_task(db: Session, task: schemas.TaskCreate) -> Task:
     return db_task
 
 
-def update_task(db: Session, task_id: int, task: schemas.TaskCreate) -> Task | None:
+def try_update_task(db: Session, task_id: int, task: schemas.TaskCreate, user_id: int) -> Task | None:
     db_task = get_task(db, task_id)
+    if user_id != db_task.user_id:
+        return None
     if db_task:
         update_data = task.dict(exclude_unset=True)
         for key, value in update_data.items():
@@ -49,8 +51,10 @@ def update_task(db: Session, task_id: int, task: schemas.TaskCreate) -> Task | N
     return db_task
 
 
-def delete_task(db: Session, task_id: int) -> Task | None:
+def try_delete_task(db: Session, task_id: int, user_id: int) -> Task | None:
     db_task = get_task(db, task_id)
+    if user_id != db_task.user_id:
+        return None
     if db_task:
         db.delete(db_task)
         db.commit()

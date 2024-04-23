@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import jwt
-
-from datetime import datetime, timedelta
+from fastapi.security import OAuth2PasswordRequestForm
 
 from database import user as user_crud
 from dependencies import DBDependency
 from schemas import Token, User
 
 from passlib.context import CryptContext
+
+from securities import create_access_token
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -21,23 +20,8 @@ def get_password_hash(password) -> str:
     return pwd_context.hash(password)
 
 
-# Constants
-SECRET_KEY = "人生苦短 我用Python"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 router = APIRouter(
     tags=["auth"])
-
-
-def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
 
 
 @router.post("/token", response_model=Token)

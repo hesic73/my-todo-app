@@ -4,6 +4,27 @@ import TaskList from './TaskList';
 import Sidebar from './Sidebar';
 import AddTaskButton from 'AddTaskButton';
 
+const loginAndGetToken = async () => {
+    const response = await fetch('/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            username: 'admin',
+            password: '123456'
+        })
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+        return data.access_token;
+    } else {
+        throw new Error(`Login failed: ${data.detail}`);
+    }
+};
+
+
 /**
  * @typedef {import('./types/types').Task} Task
  */
@@ -14,11 +35,25 @@ function App() {
     const [showTaskInput, setShowTaskInput] = useState(false); // New state to control TaskInput visibility
 
     useEffect(() => {
-        fetchTasks();
+        const fetchWithAuth = async () => {
+            try {
+                const token = await loginAndGetToken();
+                await fetchTasks(token);
+            } catch (error) {
+                console.error("Authentication failed:", error.message);
+            }
+        };
+    
+        fetchWithAuth();
     }, []);
 
-    const fetchTasks = async () => {
-        const response = await fetch('/tasks/');
+    const fetchTasks = async (token) => {
+        const response = await fetch('/tasks/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         const data = await response.json();
         setTasks(data);
     };
