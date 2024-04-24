@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import LIST_WIDTH from './consts';
+import LIST_WIDTH from '../consts';
 
-import ConfirmModal from 'ConfirmModal';
+import ConfirmModal from 'components/ConfirmModal';
 
 /**
- * @typedef {import('./types/types').Task} Task
+ * @typedef {import('../types/types').Task} Task
  */
 
 
@@ -27,7 +27,15 @@ function TaskItem({ task, removeTask, updateTask }) {
   };
 
   const confirmDelete = async () => {
-    await fetch(`/tasks/${task.id}`, { method: 'DELETE' });
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("You need to login to delete a task.");
+      return;
+    }
+    await fetch(`api/tasks/${task.id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
     removeTask(task.id);
     setShowConfirmModal(false);
   };
@@ -40,9 +48,18 @@ function TaskItem({ task, removeTask, updateTask }) {
         description: editedDescription,
         last_modified: new Date().toISOString()
       };
-      await fetch(`/tasks/${task.id}`, {
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert("You need to login to edit a task.");
+        return;
+      }
+      await fetch(`api/tasks/${task.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(updatedTask),
       });
       updateTask(updatedTask);

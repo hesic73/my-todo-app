@@ -1,62 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import TaskInput from './TaskInput';
-import TaskList from './TaskList';
-import Sidebar from './Sidebar';
-import AddTaskButton from 'AddTaskButton';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import LoginForm from 'components/LoginForm';
 
-const loginAndGetToken = async () => {
-    const response = await fetch('/token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            username: 'admin',
-            password: '123456'
-        })
-    });
 
-    const data = await response.json();
-    if (response.ok) {
-        return data.access_token;
-    } else {
-        throw new Error(`Login failed: ${data.detail}`);
-    }
-};
+import Main from 'components/Main';
 
 
 /**
  * @typedef {import('./types/types').Task} Task
  */
 
+
+const PrivateRoute = ({ children }) => {
+    const token = localStorage.getItem('token');
+    // Redirects to login if no token is found
+    return token ? children : <Navigate to="/login" replace />;
+};
+
 function App() {
     const [tasks, setTasks] = useState([]);
-    const [isSidebarCollapsed, setSidebarCollapsed] = useState(true);
-    const [showTaskInput, setShowTaskInput] = useState(false); // New state to control TaskInput visibility
+
 
     useEffect(() => {
-        const fetchWithAuth = async () => {
-            try {
-                const token = await loginAndGetToken();
-                await fetchTasks(token);
-            } catch (error) {
-                console.error("Authentication failed:", error.message);
-            }
-        };
-    
-        fetchWithAuth();
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchTasks(token);
+        }
     }, []);
 
     const fetchTasks = async (token) => {
-        const response = await fetch('/tasks/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
+        try {
+            const response = await fetch('api/tasks/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        });
-        const data = await response.json();
-        setTasks(data);
+            const data = await response.json();
+            setTasks(data);
+        } catch (error) {
+            console.error("Failed to fetch tasks:", error);
+            // Optionally, handle errors more visibly for the user, e.g., with a notification or alert
+        }
     };
+
+
 
     /**
      * 
@@ -82,37 +73,18 @@ function App() {
         setTasks(prevTasks => prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task));
     };
 
-    const toggleSidebar = () => setSidebarCollapsed(!isSidebarCollapsed);
 
-    const handleNewTaskClick = () => {
-        setShowTaskInput(true); // Show TaskInput when the button is clicked
-    };
+
 
     return (
-        <div className="App bg-white min-h-screen flex">
-            <Sidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} />
-            <div className={`flex-1 transition-margin duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-                <header className="text-center py-10">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-4">To-Do List</h1>
-                </header>
-
-                <main className="max-w-4xl mx-auto px-4">
-
-
-                    <TaskList tasks={tasks} removeTask={removeTask} updateTask={updateTask} />
-
-
-                    {!showTaskInput && <AddTaskButton handleNewTaskClick={handleNewTaskClick} />}
-
-
-                    {showTaskInput && <TaskInput onAddTask={addTask} onClose={() => setShowTaskInput(false)} />}
-
-
-                </main>
-
-
-            </div>
-        </div>
+        <Routes>
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/" element={
+                <PrivateRoute>
+                    <Main tasks={tasks} addTask={addTask} removeTask={removeTask} updateTask={updateTask} />
+                </PrivateRoute>
+            } />
+        </Routes>
     );
 }
 

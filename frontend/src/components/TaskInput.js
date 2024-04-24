@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import LIST_WIDTH from './consts';
+import LIST_WIDTH from '../consts';
 
 /**
- * @typedef {import('./types/types').Task} Task
+ * @typedef {import('../types/types').Task} Task
  */
 
 
@@ -25,10 +25,17 @@ function TaskInput({ onAddTask, onClose }) {
       return;
     }
 
-    const response = await fetch('/tasks/', {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("You need to login to add a task.");
+      return;
+    }
+
+    const response = await fetch('api/tasks/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ name: taskName, description: description, last_modified: new Date().toISOString() }),
     });
