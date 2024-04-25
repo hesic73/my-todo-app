@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import LIST_WIDTH from '../consts';
+import { useAuth } from 'AuthContext';
 
 /**
  * @typedef {import('../types/types').Task} Task
@@ -17,6 +18,8 @@ function TaskInput({ onAddTask, onClose }) {
   const [taskName, setTaskName] = useState('');
   const [description, setDescription] = useState('');
 
+  const { token } = useAuth();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -25,7 +28,6 @@ function TaskInput({ onAddTask, onClose }) {
       return;
     }
 
-    const token = localStorage.getItem('token');
     if (!token) {
       alert("You need to login to add a task.");
       return;

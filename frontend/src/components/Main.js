@@ -37,7 +37,7 @@ function Main() {
 
 
     const [tasks, setTasks] = useState([]);
-    const { userData, token } = useAuth();
+    const { userData, token, authLoading } = useAuth();
 
     const fetchTasks = async (token) => {
         try {
@@ -63,6 +63,10 @@ function Main() {
         }
     }, [token]);
 
+
+    if (authLoading) {
+        return <div>Loading...</div>;  // Handle loading state
+    }
 
     if (!userData) {
         return <Navigate to="/login" replace />;

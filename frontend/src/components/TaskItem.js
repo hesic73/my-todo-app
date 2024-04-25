@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import LIST_WIDTH from '../consts';
 
 import ConfirmModal from 'components/ConfirmModal';
+import { useAuth } from 'AuthContext';
+
 
 /**
  * @typedef {import('../types/types').Task} Task
@@ -21,6 +23,8 @@ function TaskItem({ task, removeTask, updateTask }) {
   const [editedTaskName, setEditedTaskName] = useState(task.name);
   const [editedDescription, setEditedDescription] = useState(task.description);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const { token } = useAuth();
 
   const handleDelete = () => {
     setShowConfirmModal(true);
@@ -49,7 +53,6 @@ function TaskItem({ task, removeTask, updateTask }) {
         last_modified: new Date().toISOString()
       };
 
-      const token = localStorage.getItem('token');
       if (!token) {
         alert("You need to login to edit a task.");
         return;

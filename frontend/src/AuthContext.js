@@ -4,19 +4,27 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [userData, setUserData] = useState(null);
+    const [userData, setUserData] = useState(undefined);
     const [token, setToken] = useState(localStorage.getItem('token'));
+
+    const [authLoading, setAuthLoading] = useState(true);  // Track loading state
 
     useEffect(() => {
         if (token) {
-            // Assume verifyToken is a function that verifies the token and returns user data if valid
             verifyToken(token).then(userData => {
                 if (userData) {
                     setUserData({ username: userData.username });
                 } else {
-                    logout(); // if the token verification fails, logout the user
+                    logout();
                 }
+                setAuthLoading(false);  // Set loading false on verification completion
+            }).catch(() => {
+                logout();
+                setAuthLoading(false);  // Ensure to set loading false on error
             });
+        } else {
+            setUserData(null);
+            setAuthLoading(false);  // Set loading false if no token present
         }
     }, [token]);
 
@@ -36,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user: userData, token, login, logout }}>
+        <AuthContext.Provider value={{ userData, token, login, logout, authLoading }}>
             {children}
         </AuthContext.Provider>
     );
