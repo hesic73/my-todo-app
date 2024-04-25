@@ -12,14 +12,15 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
     tasks = relationship("Task", back_populates="user")
 
 
-def create_user(db: Session, username: str, hashed_password: str) -> User | None:
+def create_user(db: Session, username: str, email: str, hashed_password: str) -> User | None:
     try:
-        db_user = User(username=username, hashed_password=hashed_password)
+        db_user = User(username=username, hashed_password=hashed_password, email=email)
         db.add(db_user)
         db.commit()
         db.refresh(db_user)

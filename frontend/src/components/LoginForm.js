@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
+import { useAuth } from 'AuthContext';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
@@ -7,7 +10,16 @@ function LoginForm() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const login = async (username, password) => {
+
+  const { login } = useAuth();
+
+  /**
+   * 
+   * @param {string} username 
+   * @param {string} password 
+   * @returns 
+   */
+  const sendLoginRequest = async (username, password) => {
     setError(''); // Reset error on new login attempt
     if (!username || !password) {
       setError('Username and password are required.');
@@ -27,7 +39,7 @@ function LoginForm() {
       });
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem('token', data.access_token);
+        login(data.access_token);
         navigate('/'); // Redirect to home page on successful login
       } else {
         throw new Error(data.detail || 'Unexpected error');
@@ -41,7 +53,7 @@ function LoginForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(username, password);
+    sendLoginRequest(username, password);
   };
 
   return (
@@ -89,6 +101,11 @@ function LoginForm() {
             Login
           </button>
         </form>
+        <p className="mt-6 text-center">
+          Need an account? <Link to="/register" className="text-indigo-600 hover:text-indigo-500">Register here</Link>
+        </p>
+
+
       </div>
     </div>
   );

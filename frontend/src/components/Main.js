@@ -1,9 +1,11 @@
-import React, { useState, } from 'react';
+import React, { useEffect, useState, } from 'react';
 import TaskInput from 'components/TaskInput';
 import TaskItem from 'components/TaskItem';
 import Sidebar from 'components/Sidebar';
 import AddTaskButton from 'components/AddTaskButton';
 
+import { useAuth } from 'AuthContext';
+import { Navigate } from 'react-router-dom';
 
 /**
  * @typedef {import('types/types').Task} Task
@@ -20,7 +22,7 @@ import AddTaskButton from 'components/AddTaskButton';
  * @param {(Task)=>void} props.updateTask
  * @returns 
  */
-function Main({ tasks, addTask, removeTask, updateTask }) {
+function Main() {
 
 
     const [isSidebarCollapsed, setSidebarCollapsed] = useState(true);
@@ -31,6 +33,66 @@ function Main({ tasks, addTask, removeTask, updateTask }) {
     const handleNewTaskClick = () => {
         setShowTaskInput(true);
     };
+
+
+
+    const [tasks, setTasks] = useState([]);
+    const { userData, token } = useAuth();
+
+    const fetchTasks = async (token) => {
+        try {
+            const response = await fetch('api/tasks/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setTasks(data);
+        } catch (error) {
+            console.error("Failed to fetch tasks:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (token) {
+            fetchTasks(token);
+        }
+    }, [token]);
+
+
+    if (!userData) {
+        return <Navigate to="/login" replace />;
+    }
+
+
+    /**
+     * 
+     * @param {Task} newTask new task to add
+     */
+    const addTask = (newTask) => {
+        setTasks(prevTasks => [...prevTasks, newTask]);
+    };
+
+    /**
+     * 
+     * @param {number} id Id of the task to remove
+     */
+    const removeTask = (id) => {
+        setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+    };
+
+    /**
+     * 
+     * @param {Task} updatedTask new task to update
+     */
+    const updateTask = (updatedTask) => {
+        setTasks(prevTasks => prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task));
+    };
+
 
 
     return (
