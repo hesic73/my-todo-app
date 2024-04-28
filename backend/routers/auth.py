@@ -34,7 +34,7 @@ async def verify_token(db: DBDependency, current_username: CurrentUserDependency
 
 
 class LoginRequest(BaseModel):
-    username: str
+    username: str  # This can be a username or an email
     password: str
 
 
@@ -46,7 +46,14 @@ class RegisterRequest(BaseModel):
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: LoginRequest, db: DBDependency):
-    user = user_crud.get_user_by_username(db, username=form_data.username)
+    # First, attempt to validate the input as an email
+    try:
+        validated_email = validate_email(form_data.username).email
+        user = user_crud.get_user_by_email(db, email=validated_email)
+    except EmailNotValidError:
+        # If it's not a valid email, assume it's a username
+        user = user_crud.get_user_by_username(db, username=form_data.username)
+
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
