@@ -10,6 +10,13 @@ function RegisterForm() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    /**
+     * 
+     * @param {string} username 
+     * @param {string} email 
+     * @param {string} password 
+     * @returns 
+     */
     const register = async (username, email, password) => {
         setError(''); // Reset error on new register attempt
         if (!username || !email || !password) {
@@ -21,9 +28,9 @@ function RegisterForm() {
             const response = await fetch('api/register', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Type': 'application/json',
                 },
-                body: new URLSearchParams({
+                body: JSON.stringify({
                     username,
                     email,
                     password

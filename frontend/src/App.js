@@ -4,7 +4,7 @@ import LoginForm from 'components/LoginForm';
 import RegisterForm from 'components/RegisterForm';
 
 import Main from 'components/Main';
-import { AuthProvider } from 'AuthContext';
+import { AuthProvider } from 'hooks/AuthContext';
 
 
 function App() {

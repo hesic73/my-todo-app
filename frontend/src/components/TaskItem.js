@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import LIST_WIDTH from '../consts';
 
 import ConfirmModal from 'components/ConfirmModal';
-import { useAuth } from 'AuthContext';
+import { useAuth } from 'hooks/AuthContext';
 
 
 /**

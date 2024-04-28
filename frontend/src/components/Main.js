@@ -4,7 +4,7 @@ import TaskItem from 'components/TaskItem';
 import Sidebar from 'components/Sidebar';
 import AddTaskButton from 'components/AddTaskButton';
 
-import { useAuth } from 'AuthContext';
+import { useAuth } from 'hooks/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 /**
@@ -63,6 +63,8 @@ function Main() {
         }
     }, [token]);
 
+
+    console.log("Main:", authLoading, userData);
 
     if (authLoading) {
         return <div>Loading...</div>;  // Handle loading state

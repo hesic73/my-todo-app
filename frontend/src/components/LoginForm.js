@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
-import { useAuth } from 'AuthContext';
+import { useAuth } from 'hooks/AuthContext';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
@@ -11,7 +11,14 @@ function LoginForm() {
   const navigate = useNavigate();
 
 
-  const { login } = useAuth();
+  const { authLoading, userData, login } = useAuth();
+
+  console.log("Login Form:", authLoading, userData);
+
+  // Redirect to home page if user is already logged in
+  if ((!authLoading && userData)) {
+    navigate('/');
+  }
 
   /**
    * 
@@ -30,9 +37,9 @@ function LoginForm() {
       const response = await fetch('api/token', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
-        body: new URLSearchParams({
+        body: JSON.stringify({
           username,
           password
         })

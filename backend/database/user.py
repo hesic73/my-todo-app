@@ -1,10 +1,17 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.orm import relationship
 
 from sqlalchemy.exc import IntegrityError
 
 from .base import Base
+
+import enum
+
+
+class UserRole(enum.Enum):
+    ADMIN = "admin"
+    COMMON = "common"
 
 
 class User(Base):
@@ -13,7 +20,9 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
+
     hashed_password = Column(String)
+    role = Column(Enum(UserRole), default=UserRole.COMMON)
 
     tasks = relationship("Task", back_populates="user")
 

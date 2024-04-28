@@ -11,9 +11,10 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         if (token) {
+            setAuthLoading(true);
             verifyToken(token).then(userData => {
                 if (userData) {
-                    setUserData({ username: userData.username });
+                    setUserData(userData);
                 } else {
                     logout();
                 }
@@ -52,6 +53,11 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => useContext(AuthContext);
 
+/**
+ * 
+ * @param {string} token 
+ * @returns 
+ */
 function verifyToken(token) {
     return fetch('/api/verify-token', {
         method: 'GET',
@@ -64,12 +70,6 @@ function verifyToken(token) {
                 throw new Error('Token validation failed');
             }
             return response.json();
-        })
-        .then(data => {
-            if (data.valid) {
-                return data;  // Return the response data if the token is valid
-            }
-            throw new Error('Invalid token');  // Optionally handle specific error based on API response
         })
         .catch(error => {
             console.error('Error verifying token:', error);
