@@ -18,7 +18,7 @@ class User(Base):
     email: Mapped[EmailStr] = mapped_column(EmailType, unique=True)
     user_type: Mapped[UserType]
 
-    addresses: Mapped['Address'] = relationship(  # type: ignore
+    tasks: Mapped[list['Task']] = relationship(  # type: ignore
         back_populates='user', cascade='all, delete, delete-orphan')
 
     def __repr__(self):
