@@ -8,12 +8,13 @@ from sqlalchemy.sql import select
 from app.enums import UserType
 from app import database
 
-from app.database import engine
+from app.database import engine, init_db
 
 # Function to change the user_type of a user
 
 
 async def change_user_type(username: str, new_user_type: UserType):
+    await init_db()
     async_session = sessionmaker(
         bind=engine, expire_on_commit=False, class_=AsyncSession
     )

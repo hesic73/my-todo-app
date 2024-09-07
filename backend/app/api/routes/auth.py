@@ -1,21 +1,22 @@
 from datetime import timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi import status, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+
+
+from pydantic import BaseModel, EmailStr
 
 
 from app.dependencies import DBDependency, TokenDependency, CurrentUser
 
 from app import schemas
-from app.utils.forms import RegistrationForm
-from app.core.security import get_password_hash
 from app.core import security
 from app.core.config import settings
 from app.core.security import get_password_hash
 from app.database.crud import get_user_by_email, get_user_by_username, create_user
+
+from email_validator import validate_email, EmailNotValidError
 
 
 router = APIRouter()
@@ -50,26 +51,34 @@ async def test_token(current_user: CurrentUser):
     return current_user
 
 
+class RegisterRequest(BaseModel):
+    username: str
+    full_name: str
+    email: EmailStr
+    password: str
+
+
 @router.post("/register", response_model=schemas.User)
-async def register(request: Request, db: DBDependency):
-
-    form = RegistrationForm(await request.form())
-    if not form.validate():
+async def register(register_request: RegisterRequest, db: DBDependency):
+    try:
+        valid = validate_email(register_request.email)
+        register_request.email = valid.normalized  # Normalize the email
+    except EmailNotValidError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(form.errors))
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid email: {str(e)}"
+        )
+    hashed_password = get_password_hash(register_request.password)
 
-    data = form.data
+    user =await create_user(db=db, username=register_request.username,
+                       full_name=register_request.full_name,
+                       email=register_request.email,
+                       hashed_password=hashed_password)
 
-    user = await create_user(db=db,
-                             username=data['username'],
-                             full_name=data["full_name"],
-                             hashed_password=get_password_hash(
-                                 data['password']),
-                             email=data['email'],
-                             )
-
-    if not user:
+    if user is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username or email already registered"
+        )
 
     return user
