@@ -17,7 +17,7 @@ export default function NavbarButtonGroup() {
                 </>
             ) : (
                 <>
-                    <Link href="#" className={buttonVariants({ variant: "outline", size: "sm" })}>Sign in</Link>
+                    <Link href="/login" className={buttonVariants({ variant: "outline", size: "sm" })}>Sign in</Link>
                     <Link href="#" className={buttonVariants({ size: "sm" })}>Sign up</Link>
                 </>
 
