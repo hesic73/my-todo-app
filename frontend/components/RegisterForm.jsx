@@ -9,6 +9,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from 'next/link';
 
+import { useState } from 'react';
+import { AlertDestructive } from './AlertDestructive';
+
 const formSchema = z.object({
     username: z.string().min(2, {
         message: "Username must be at least 2 characters.",
@@ -46,16 +49,19 @@ export default function RegisterForm() {
         },
     })
 
+    const [errorMessage, setErrorMessage] = useState("");
+
     // Submit handler
     function onSubmit(values) {
         console.log(values)
+        setErrorMessage("Error registering user.");
     }
 
     return (
         <Card className="max-w-md mx-auto mt-10 p-6 shadow-lg">
             <CardHeader>
-                <CardTitle>
-                    <span className="text-2xl font-semibold">Register</span>
+                <CardTitle className="text-center">
+                    <span className="text-3xl font-semibold">Register</span>
                 </CardTitle>
             </CardHeader>
 
@@ -142,13 +148,14 @@ export default function RegisterForm() {
                 </Form>
             </CardContent>
 
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex flex-col justify-between">
                 <p className="text-sm">
                     Already have an account?{" "}
                     <Link href="/login" className="text-blue-500 hover:underline">
                         Login here
                     </Link>
                 </p>
+                {errorMessage && <AlertDestructive className="mt-4" description={errorMessage} />}
             </CardFooter>
         </Card>
     );
