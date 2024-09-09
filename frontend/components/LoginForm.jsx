@@ -46,7 +46,7 @@ export default function LoginForm() {
 
         try {
             const response = await apiFetch(
-                '/login/access-token', // Your API endpoint
+                '/auth/login/access-token', // Your API endpoint
                 null, // No bearer token needed for login
                 {
                     username: values.username,

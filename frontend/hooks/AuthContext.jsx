@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
         const fetchUserData = async () => {
             try {
-                const userData = await verifyToken(token);
+                const userData = await testToken(token);
                 if (userData) {
                     setUserData(userData);
                 } else {
@@ -59,10 +59,10 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => useContext(AuthContext);
 
-async function verifyToken(token) {
+async function testToken(token) {
     try {
-        const response = await fetch('/auth/login/access-token', {
-            method: 'GET',
+        const response = await fetch('/auth/login/test-token', {
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
             }
