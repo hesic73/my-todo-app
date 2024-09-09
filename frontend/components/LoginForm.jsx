@@ -12,6 +12,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { AlertDestructive } from './AlertDestructive';
 
+import { apiFetch } from '@/lib/utils';
+
+import { useAuth } from '@/hooks/AuthContext';
+
 const formSchema = z.object({
     username: z.string().min(2, {
         message: "Username must be at least 2 characters.",
@@ -34,11 +38,31 @@ export default function LoginForm() {
 
     const [errorMessage, setErrorMessage] = useState("");
 
+    const { login } = useAuth();
+
     // Submit handler
-    function onSubmit(values) {
-        console.log(values)
-        setErrorMessage("Invalid username or password.");
-    }
+    const onSubmit = async (values) => {
+        console.log(values); // Logs form values (username and password)
+
+        try {
+            const response = await apiFetch(
+                '/login/access-token', // Your API endpoint
+                null, // No bearer token needed for login
+                {
+                    username: values.username,
+                    password: values.password,
+                },
+                'POST'
+            );
+
+            console.log('Login successful, token:', response.access_token);
+            login(response.access_token);
+            // Store the token, navigate, or perform another action on successful login
+        } catch (error) {
+            setErrorMessage('Invalid username or password.');
+            console.error('Login failed:', error);
+        }
+    };
 
     return (
         <Card className="max-w-md mx-auto mt-10 p-6 shadow-lg">
