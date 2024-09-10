@@ -12,6 +12,18 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog"
+
+
 export default function TodoList() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
@@ -102,7 +114,7 @@ export default function TodoList() {
   });
 
   return (
-    <div className="w-full md:w-[28rem] mt-8 p-4 bg-background rounded-lg shadow">
+    <div className="w-full md:w-[28rem] mt-16 p-4 bg-background rounded-lg shadow mx-auto">
       <h1 className="text-2xl font-bold mb-4">Todo List</h1>
       <div className="flex flex-col mb-4">
         <Textarea
@@ -210,9 +222,28 @@ function TodoListItem({ todo, onToggle, editing, startEditing, editText, setEdit
           <Button size="icon" onClick={() => startEditing(todo.id, todo.content)} variant="ghost" className="h-8 w-8 p-0">
             <Edit className="h-4 w-4" />
           </Button>
-          <Button size="icon" onClick={() => deleteTodo(todo.id)} variant="ghost" className="h-8 w-8 p-0">
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="icon" variant="ghost" className="h-8 w-8 p-0">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Confirmation</DialogTitle>
+              </DialogHeader>
+              <p>Are you sure you want to delete this task?</p>
+              <DialogFooter>
+                <Button onClick={() => deleteTodo(todo.id)}>Delete</Button>
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary">
+                    Cancel
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
         </div>
       )}
     </li>
