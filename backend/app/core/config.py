@@ -13,5 +13,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
 
+    FRONTEND_URL: str
+
 
 settings = Settings()  # type: ignore
