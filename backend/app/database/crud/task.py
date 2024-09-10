@@ -74,8 +74,9 @@ async def delete_task(db: AsyncSession, task_id: int):
     stmt = select(Task).filter(Task.id == task_id)
     result = await db.execute(stmt)
     db_task = result.scalars().first()
-    db.delete(db_task)
-    await db.commit()
+    if db_task:  # Ensure task exists
+        await db.delete(db_task)
+        await db.commit()
     return db_task
 
 
@@ -83,6 +84,9 @@ async def delete_task_of_user(db: AsyncSession, task_id: int, user_id: int):
     stmt = select(Task).filter(Task.id == task_id, Task.user_id == user_id)
     result = await db.execute(stmt)
     db_task = result.scalars().first()
-    db.delete(db_task)
-    await db.commit()
+
+    if db_task:  # Ensure task exists
+        await db.delete(db_task)
+        await db.commit()
+
     return db_task

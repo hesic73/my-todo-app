@@ -71,6 +71,12 @@ export default function TodoList() {
     }
   };
 
+  // Start editing task
+  const startEditing = (id, content) => {
+    setEditingId(id);
+    setEditText(content);
+  };
+
   // Save task edit
   const saveEdit = async () => {
     if (editingId !== null) {
@@ -127,52 +133,85 @@ export default function TodoList() {
       </RadioGroup>
       <ul className="space-y-2">
         {filteredTodos.map(todo => (
-          <li key={todo.id} className="flex items-start bg-muted p-2 rounded">
-            {editingId !== todo.id && (
-              <Checkbox
-                checked={todo.status === 'completed'}
-                onCheckedChange={() => toggleTodo(todo.id, todo.status !== 'completed')}
-                className="mr-2 mt-1"
-              />
-            )}
-            <div className="flex-grow">
-              {editingId === todo.id ? (
-                <div className="flex flex-col">
-                  <Textarea
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    className="mb-2 min-h-[100px]"
-                  />
-                  <div className="flex justify-end">
-                    <Button size="sm" onClick={saveEdit} variant="ghost" className="mr-1">
-                      <Check className="h-4 w-4 mr-1" />
-                      Save
-                    </Button>
-                    <Button size="sm" onClick={cancelEdit} variant="ghost">
-                      <X className="h-4 w-4 mr-1" />
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex justify-between items-start">
-                  <span className={`break-words ${todo.status === 'completed' ? 'line-through text-muted-foreground' : ''}`}>
-                    {todo.content}
-                  </span>
-                  <div className="flex ml-2">
-                    <Button size="icon" onClick={() => startEditing(todo.id, todo.content)} variant="ghost" className="h-8 w-8 p-0">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button size="icon" onClick={() => deleteTodo(todo.id)} variant="ghost" className="h-8 w-8 p-0">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </li>
+          <TodoListItem
+            key={todo.id}
+            todo={todo}
+            onToggle={toggleTodo}
+            editing={editingId === todo.id}
+            startEditing={startEditing}
+            editText={editText}
+            setEditText={setEditText}
+            saveEdit={saveEdit}
+            cancelEdit={cancelEdit}
+            deleteTodo={deleteTodo}
+          />
         ))}
       </ul>
     </div>
+  );
+}
+
+/**
+ * 
+ * @param {object} props
+ * @param {object} props.todo
+ * @param {number} props.todo.id
+ * @param {"completed" | "in_progress"} props.todo.status
+ * @param {string} props.todo.content
+ * @param {(id: number, completed: boolean) => Promise<void>} props.onToggle
+ * @param {boolean} props.editing
+ * @param {(id: number, content: string) => void} props.startEditing
+ * @param {string} props.editText
+ * @param {(text: string) => void} props.setEditText
+ * @param {() => Promise<void>} props.saveEdit
+ * @param {() => void} props.cancelEdit
+ * @param {(id: number) => Promise<void>} props.deleteTodo
+ * @returns 
+ */
+function TodoListItem({ todo, onToggle, editing, startEditing, editText, setEditText, saveEdit, cancelEdit, deleteTodo }) {
+
+  return (
+    <li className="flex items-start bg-muted p-2 rounded">
+      <Checkbox
+        checked={todo.status === 'completed'}
+        onCheckedChange={() => onToggle(todo.id, todo.status !== 'completed')}
+        className="mr-2 mt-1"
+      />
+      <div className="flex-grow">
+        {editing ? (
+          <div className="flex flex-col">
+            <Textarea
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              className="mb-2 min-h-[100px]"
+            />
+            <div className="flex justify-end">
+              <Button size="sm" onClick={saveEdit} variant="ghost" className="mr-1">
+                <Check className="h-4 w-4 mr-1" />
+                Save
+              </Button>
+              <Button size="sm" onClick={cancelEdit} variant="ghost">
+                <X className="h-4 w-4 mr-1" />
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-between items-start">
+            <span className={`break-words ${todo.status === 'completed' ? 'line-through text-muted-foreground' : ''}`}>
+              {todo.content}
+            </span>
+            <div className="flex ml-2">
+              <Button size="icon" onClick={() => startEditing(todo.id, todo.content)} variant="ghost" className="h-8 w-8 p-0">
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button size="icon" onClick={() => deleteTodo(todo.id)} variant="ghost" className="h-8 w-8 p-0">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </li>
   );
 }
