@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+import { apiFetch } from '@/lib/utils';
+
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         const fetchUserData = async () => {
+            console.log('Fetching user data');
             try {
                 const userData = await testToken(token);
                 if (userData) {
@@ -60,21 +63,5 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => useContext(AuthContext);
 
 async function testToken(token) {
-    try {
-        const response = await fetch('/auth/login/test-token', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Token validation failed');
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Error verifying token:', error);
-        return null;
-    }
+    return await apiFetch('/auth/login/test-token', token, null, 'POST');
 }

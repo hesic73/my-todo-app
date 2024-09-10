@@ -12,6 +12,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { AlertDestructive } from './AlertDestructive';
 
+import { apiFetch } from '@/lib/utils';
+
+import { useRouter } from 'next/navigation'
+
 const formSchema = z.object({
     username: z.string().min(2, {
         message: "Username must be at least 2 characters.",
@@ -49,13 +53,33 @@ export default function RegisterForm() {
         },
     })
 
+    const router = useRouter();
+
     const [errorMessage, setErrorMessage] = useState("");
 
     // Submit handler
-    function onSubmit(values) {
-        console.log(values)
-        setErrorMessage("Error registering user.");
-    }
+    const onSubmit = async (values) => {
+
+        try {
+            const response = await apiFetch(
+                '/auth/register',
+                null,
+                {
+                    username: values.username,
+                    full_name: values.full_name,
+                    email: values.email,
+                    password: values.password,
+                },
+                'POST'
+            );
+
+            console.log('Registration successful.');
+            router.push('/login');
+        } catch (error) {
+            setErrorMessage('Registration failed.');
+            console.error('Registration failed:', error);
+        }
+    };
 
     return (
         <Card className="max-w-md mx-auto mt-10 p-6 shadow-lg">

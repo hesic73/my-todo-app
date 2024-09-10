@@ -22,18 +22,23 @@ from email_validator import validate_email, EmailNotValidError
 router = APIRouter()
 
 
-@router.post("/login/access-token", name="login_access_token", response_model=schemas.Token)
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+@router.post("/login/access-token", response_model=schemas.Token)
 async def login_access_token(
-    db: DBDependency, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    db: DBDependency, login_request: LoginRequest
 ):
 
-    db_user = await get_user_by_username(db, form_data.username)
+    db_user = await get_user_by_username(db, login_request.username)
 
     if not db_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect username or password")
 
-    if not security.verify_password(form_data.password, db_user.hashed_password):
+    if not security.verify_password(login_request.password, db_user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect username or password")
 
@@ -70,10 +75,10 @@ async def register(register_request: RegisterRequest, db: DBDependency):
         )
     hashed_password = get_password_hash(register_request.password)
 
-    user =await create_user(db=db, username=register_request.username,
-                       full_name=register_request.full_name,
-                       email=register_request.email,
-                       hashed_password=hashed_password)
+    user = await create_user(db=db, username=register_request.username,
+                             full_name=register_request.full_name,
+                             email=register_request.email,
+                             hashed_password=hashed_password)
 
     if user is None:
         raise HTTPException(

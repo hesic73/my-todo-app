@@ -26,7 +26,6 @@ app = FastAPI(
 
 origins = [
     "http://localhost:3000",
-    "http://localhost:8080",
 ]
 
 app.add_middleware(
@@ -37,11 +36,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.get("/")
-async def root():
-    return RedirectResponse(url="/index.html")
-
-app.mount("/", StaticFiles(directory="../frontend/out"))
 
 app.include_router(api_router)

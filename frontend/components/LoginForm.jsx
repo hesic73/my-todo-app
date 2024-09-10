@@ -16,6 +16,9 @@ import { apiFetch } from '@/lib/utils';
 
 import { useAuth } from '@/hooks/AuthContext';
 
+
+import { useRouter } from 'next/navigation'
+
 const formSchema = z.object({
     username: z.string().min(2, {
         message: "Username must be at least 2 characters.",
@@ -36,13 +39,14 @@ export default function LoginForm() {
         },
     })
 
+    const router = useRouter();
+
     const [errorMessage, setErrorMessage] = useState("");
 
     const { login } = useAuth();
 
     // Submit handler
     const onSubmit = async (values) => {
-        console.log(values); // Logs form values (username and password)
 
         try {
             const response = await apiFetch(
@@ -57,7 +61,7 @@ export default function LoginForm() {
 
             console.log('Login successful, token:', response.access_token);
             login(response.access_token);
-            // Store the token, navigate, or perform another action on successful login
+            router.push('/'); // Redirect to home page after login
         } catch (error) {
             setErrorMessage('Invalid username or password.');
             console.error('Login failed:', error);

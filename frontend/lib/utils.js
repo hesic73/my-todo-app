@@ -40,7 +40,7 @@ export const apiFetch = async (endpoint, token = null, payload = null, method = 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Something went wrong');
+      throw new Error(data.detail || 'Something went wrong');
     }
 
     return data;
