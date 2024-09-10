@@ -64,7 +64,7 @@ export default function TodoList() {
   const toggleTodo = async (id, completed) => {
     try {
       const updatedTask = await apiFetch(`/task/${id}/`, token, { status: completed ? 'completed' : 'in_progress' }, 'PUT');
-      console.log(updatedTask);
+      // console.log(updatedTask);
       setTodos(todos.map(todo => (todo.id === id ? updatedTask : todo)));
     } catch (error) {
       console.error('Failed to toggle task status:', error);
@@ -169,15 +169,16 @@ export default function TodoList() {
  * @returns 
  */
 function TodoListItem({ todo, onToggle, editing, startEditing, editText, setEditText, saveEdit, cancelEdit, deleteTodo }) {
-
   return (
-    <li className="flex items-start bg-muted p-2 rounded">
-      <Checkbox
-        checked={todo.status === 'completed'}
-        onCheckedChange={() => onToggle(todo.id, todo.status !== 'completed')}
-        className="mr-2 mt-1"
-      />
-      <div className="flex-grow">
+    <li className="relative flex items-start bg-muted p-2 rounded">
+      {!editing && (
+        <Checkbox
+          checked={todo.status === 'completed'}
+          onCheckedChange={() => onToggle(todo.id, todo.status !== 'completed')}
+          className="mr-2 mt-1"
+        />
+      )}
+      <div className="flex-grow max-w-full"> {/* Add padding to the right to give space for the icons */}
         {editing ? (
           <div className="flex flex-col">
             <Textarea
@@ -197,21 +198,23 @@ function TodoListItem({ todo, onToggle, editing, startEditing, editText, setEdit
             </div>
           </div>
         ) : (
-          <div className="flex justify-between items-start">
+          <div className="break-words pr-8">
             <span className={`break-words ${todo.status === 'completed' ? 'line-through text-muted-foreground' : ''}`}>
               {todo.content}
             </span>
-            <div className="flex ml-2">
-              <Button size="icon" onClick={() => startEditing(todo.id, todo.content)} variant="ghost" className="h-8 w-8 p-0">
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button size="icon" onClick={() => deleteTodo(todo.id)} variant="ghost" className="h-8 w-8 p-0">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         )}
       </div>
+      {!editing && (
+        <div className="absolute right-2 top-2 flex space-x-2"> {/* Position the icons absolutely in the top-right */}
+          <Button size="icon" onClick={() => startEditing(todo.id, todo.content)} variant="ghost" className="h-8 w-8 p-0">
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button size="icon" onClick={() => deleteTodo(todo.id)} variant="ghost" className="h-8 w-8 p-0">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </li>
   );
 }
