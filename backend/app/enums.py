@@ -8,4 +8,4 @@ class UserType(Enum):
 
 class TaskStatus(Enum):
     IN_PROGRESS = "in_progress"
-    COMPLETE = "complete"
+    COMPLETE = "completed"
