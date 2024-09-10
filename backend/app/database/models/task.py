@@ -1,12 +1,12 @@
+from app.enums import TaskStatus
+from ..base import Base
 from sqlalchemy import Unicode
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-from datetime import datetime, UTC
-
-from ..base import Base
-
-from app.enums import TaskStatus
+from datetime import datetime
+from datetime import timezone
+UTC = timezone.utc
 
 
 class Task(Base):
